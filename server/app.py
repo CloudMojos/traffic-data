@@ -1,15 +1,6 @@
-from flask import Flask, render_template, Response, jsonify, request, session
-
-# FlaskForm = used for file input forms
-
-from flask_wtf import FlaskForm
-
-from wtforms import FileField, SubmitField, StringField, DecimalRangeField, IntegerRangeField, IntegerField
-from werkzeug.utils import secure_filename
-from wtforms.validators import InputRequired, NumberRange
-import os
-
-from math import floor
+from flask import Flask, Response, request
+import csv
+from io import StringIO
 from bson.json_util import dumps
 
 
@@ -25,8 +16,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tofuhermit'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/find', methods=['GET', 'POST'])
+@app.route('/')
+@app.route('/find')
 def find():
     query_params = request.args.to_dict()
 
@@ -34,6 +25,33 @@ def find():
 
     json_data = dumps(documents, indent=2)
     return Response(json_data, mimetype='application/json')
+
+
+@app.route('/export')
+def export():
+    query_params = request.args.to_dict()
+    documents = list(find_traffic_data(query_params))
+
+    # Create a CSV buffer
+    csv_buffer = StringIO()
+
+    headers = documents[-1].keys()
+
+    csv_writer = csv.DictWriter(csv_buffer, fieldnames=headers)
+
+    csv_writer.writeheader()
+
+    for document in documents:
+        csv_writer.writerow(document)
+
+    csv_data = csv_buffer.getvalue()
+
+    response = Response(csv_data, mimetype='text/csv')
+
+    response.headers.set("Content-Disposition", "attachment", filename="traffic_data.csv")
+
+    return response
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
