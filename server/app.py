@@ -1,4 +1,4 @@
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
 import csv
 from io import StringIO
 from bson.json_util import dumps
@@ -16,7 +16,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tofuhermit'
 app.config['UPLOAD_FOLDER'] = 'static/files'
 
+
 @app.route('/')
+@app.route('/explorer')
+def explorer():
+    return render_template('index.html')
+
+
 @app.route('/find')
 def find():
     query_params = request.args.to_dict()
