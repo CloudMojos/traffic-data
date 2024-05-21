@@ -28,7 +28,10 @@ app.config['UPLOAD_FOLDER'] = 'static/files'
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/find', methods=['GET', 'POST'])
 def find():
-    documents = list(find_traffic_data([]))
+    query_params = request.args.to_dict()
+
+    documents = list(find_traffic_data(query_params))
+
     json_data = dumps(documents, indent=2)
     return Response(json_data, mimetype='application/json')
 

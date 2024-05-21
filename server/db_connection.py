@@ -32,8 +32,6 @@ def insert_traffic_data(class_type, date, in_time, out_time, full_address):
         "full_address": full_address
     }
 
-
-
     inserted_id = collection.insert_one(traffic_data).inserted_id
     inserted_id = 0
     return inserted_id
@@ -42,9 +40,18 @@ def insert_traffic_data(class_type, date, in_time, out_time, full_address):
 collection = db.trafficinstances
 
 
-def find_traffic_data(args):
-    return collection.find()
+def find_traffic_data(query_params):
+    query = {}
 
+    # Example: Handle a range query for a field named 'age'
+    if 'date' in query_params:
+        query['date'] = {'$gte': str(query_params['date'])}
+        del query_params['date']
 
+    # Add remaining query params directly to the query
+    query.update(query_params)
+
+    documents = collection.find(query)
+    return documents
 # print(list(collection.find()))
 # print(insert_traffic_data("Car", "PUV", "00:00:00", "00:01:32", "San Jose del Monte"))
