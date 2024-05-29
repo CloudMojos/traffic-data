@@ -95,7 +95,7 @@
                 }
 
                 const queryString = params.join('&');
-                const baseURL = 'http://127.0.0.1:5000';
+                const baseURL = 'https://traffic-data.onrender.com';
 
                 document.getElementById('viewJsonURL').textContent = `${baseURL}/find?${queryString}`;
                 document.getElementById('downloadCsvURL').textContent = `${baseURL}/export?${queryString}`;
